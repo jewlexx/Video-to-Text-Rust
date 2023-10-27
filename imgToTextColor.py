@@ -5,7 +5,7 @@ import sys
 
 #Width of the output in terminal characters
 width = 80
-height = 1 
+height = 1
 
 
 #Our characters, and their approximate brightness values
@@ -24,7 +24,7 @@ LUT = np.load("LUT.npy")
 # Convert an RGB image to a stream of text with ANSI color codes
 def convertImg(img):
   line = ""
-  
+
   for row in img:
     for color in row:
       color = np.round(color).astype(int)
@@ -33,16 +33,16 @@ def convertImg(img):
 
       # Lookup the color index in the RGB lookup table
       idx = LUT[b, g, r]
-  
+
       # Get the ANSI color codes and lerp character
       bg, fg, lerp, rgb = lerped[idx]
 
       char = charSet[lerp]
-  
+
       line += "%s%c" % (setColor(bg, fg), char)
     # End each line with a black background to avoid color fringe
     line += "%s\n" % black
-  
+
   # Move the cursor back to the top of the frame to prevent rolling
   line += "\u001b[%iD\u001b[%iA" % (width, height + 1)
   return line

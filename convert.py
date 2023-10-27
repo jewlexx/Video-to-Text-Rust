@@ -30,28 +30,28 @@ numChrs = len(charSet)
 # Converts a greyscale video frame into a dithered 7-color frame
 def processFrame(scaled):
   reduced = scaled * 6. / 255
-  
+
   out = np.zeros((height, width), dtype= np.int8)
-  
+
   line = ''
   for y in range(height):
     for x in range(width):
       level = min(6, max(0, int(reduced[y, x])))
-      
+
       error = reduced[y, x] - levels[level]
-  
+
       err16 = error / 16
-  
+
       if (x + 1) < width:
         reduced[y    , x + 1] += 7 * err16
       if (y + 1) < height:
         reduced[y + 1, x    ] += 5 * err16
-  
+
         if (x + 1) < width:
           reduced[y + 1, x + 1] += 1 * err16
         if (x - 1) > 0:
           reduced[y + 1, x - 1] += 3 * err16
-      
+
       out[y, x] = level
 
   return out
@@ -59,12 +59,12 @@ def processFrame(scaled):
 # Prints out a frame in ASCII
 def toStr(frame):
   line = ''
-  
+
   for y in range(height):
     for x in range(width):
       line += charSet[frame[y, x]]
     line += '\n'
-  
+
   return line
 
 # Compute the prediction matrix for each character combination
@@ -87,7 +87,7 @@ def computeMarkov(frame):
       mat[prevChar, char] += 1
 
       prevChar = char
-  
+
   ranks = np.zeros((numChrs, numChrs)).astype(np.uint16)
   for i in range(numChrs):
     ranks[i][mat[i].argsort()] = 6 - np.arange(numChrs)
@@ -104,7 +104,7 @@ def computeMarkov(frame):
       cnt[out[y, x]] += 1
 
       prevChar = char
-  
+
   return out, ranks, cnt
 
 # Computes Huffman encodings based on the counts of each number in the frame
@@ -145,9 +145,9 @@ def computeHuffman(cnts):
       if(insertPos == len(sizes)):
         sizes.append(new)
         break
-        
+
       cnt, _, _ = sizes[insertPos]
-      
+
       if(cnt <= lnum + rnum):
         sizes.insert(insertPos, new)
         break
@@ -164,7 +164,7 @@ def convertHuffman(markovFrame, codes):
   for y in range(h):
     for x in range(w):
       out = out + codes[markovFrame[y, x]]
-  
+
   # Pad this bit-string to be byte-aligned
   padding = (8 - (len(out) % 8)) % 8
   out += ("0" * padding)
@@ -199,10 +199,10 @@ def encodeMatrix(ranks):
 
       fact *= len(idxs)
       idxs.remove(rank)
-    
+
     low_byte = int(encoding) % 256
     high_byte = (encoding - low_byte) // 256
-    
+
     out.append(high_byte)
     out.append(low_byte)
 
@@ -225,17 +225,17 @@ vidFrames = []
 while(cap.isOpened()):
   if (len(vidFrames) % 500) == 0:
     print('Loading frame %i' % len(vidFrames))
-  
+
   # Skip frames to reach target framerate
   for i in range(int(src_FPS / dest_FPS)):
     ret, frame = cap.read()
-  
+
   if frame is None:
     break
-  
+
   gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
   scaled = cv2.resize(gray, (width, height))
-  
+
   vidFrames.append(scaled)
 
 # Compute dithering for all frames in parallel
