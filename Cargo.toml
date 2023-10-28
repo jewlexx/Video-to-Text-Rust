@@ -1,5 +1,5 @@
 [package]
-name = "Video-To-Text-Rust"
+name = "video-to-text"
 version = "0.1.0"
 edition = "2021"
 
