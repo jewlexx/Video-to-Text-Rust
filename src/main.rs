@@ -73,7 +73,7 @@ impl Iterator for VideoDataIterator {
 }
 
 fn main() {
-    println!("Hello, world!");
+    assert_eq!(CHARSET.len(), 7);
 
     let mut data = VideoDataIterator::new();
     let mut prediction_matrix = PredictionMatrix::new();
