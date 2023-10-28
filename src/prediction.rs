@@ -1,7 +1,10 @@
 use std::mem::MaybeUninit;
 
+use derive_more::AsRef;
+
 use crate::CHARSET;
 
+#[derive(Debug, Copy, Clone, AsRef)]
 pub struct PredictionMatrix([[MaybeUninit<usize>; CHARSET.len()]; CHARSET.len()]);
 
 impl PredictionMatrix {
