@@ -68,7 +68,7 @@ impl HuffmanTree {
             }
 
             let bit = if let Some(c) = c.as_mut() {
-                let bit = *c & 0b10000000;
+                let bit = (*c as i16) & 0b10000000;
                 *c <<= 1;
 
                 bit
